@@ -6,7 +6,7 @@ using std::cout;
 using std::endl;
 
 Person::Person(char *name, Person* father, Person* mother){
-    this->name = new char[strlen(name)];
+    this->name = new char[strlen(name) + 1];
     strcpy(this->name, name);
     this->father = father;
     this->mother = mother;
@@ -16,7 +16,11 @@ Person::Person(char *name, Person* father, Person* mother){
 }
 
 Person::~Person(){
-    delete children;
+   /* for(unsigned int i = 0; i < 4; i++){
+	delete children[i];
+}*/
+    delete[] children;
+    delete[] name;
 }
 
 void Person::addChild(Person *newChild){
@@ -42,16 +46,21 @@ void Person::printLineage(char dir, int level){
             cout << temp << "child: " << children[i]->getName() << endl;
             children[i]->printLineage(dir, level + 1);
         }
+	//delete[] temp;
     } else {
         if(mother){
             cout << temp << "mother: " << mother->getName() << endl;
             mother->printLineage(dir, level + 1);
+	    //delete[] temp;
         }
         if(father){
             cout << temp << "father: " << father->getName() << endl;
             father->printLineage(dir, level + 1);
+	    
         }
+	//delete[] temp;
     }
+	delete[] temp;
 }
 
 /* helper function to compute the lineage
@@ -61,12 +70,14 @@ void Person::printLineage(char dir, int level){
 char* Person::compute_relation(int level){
     if(level == 0) return strcpy(new char[1], "");
 
-    char *temp = strcpy(new char[strlen("grand ") + 1], "grand ");;
-    
+    char *temp = strcpy(new char[strlen("grand ") + 1], "grand ");
+    //delete temp; 
     for(int i = 2; i <= level; i++){
         char *temp2 = new char[strlen("great ") + strlen(temp) + 1];
         strcat(strcpy(temp2, "great "), temp);
+	delete[] temp;	
         temp = temp2;
+	//delete[] temp2;
     }
     return temp;
 }
@@ -77,6 +88,13 @@ char* Person::compute_relation(int level){
 void expand(Person ***t, int *MAX){
   Person **temp = new Person*[2 * *MAX];
   memcpy(temp, *t, *MAX * sizeof(**t));
+  delete[] *t;
   *MAX *= 2;
   *t = temp;
+   
+  /*for(unsigned int i = 0; i < sizeof(temp)/sizeof(temp[0]) - 1; i++){
+	if(temp[i] != NULL){
+		delete temp[i];
+	}
+  }*/
 }
